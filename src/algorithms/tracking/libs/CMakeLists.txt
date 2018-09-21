@@ -40,10 +40,12 @@ set(TRACKING_LIB_SOURCES
      tcp_packet_data.cc
      tracking_2nd_DLL_filter.cc
      tracking_2nd_PLL_filter.cc
+     tracking_Kalman_filter.cc
      tracking_discriminators.cc
      tracking_FLL_PLL_filter.cc
      tracking_loop_filter.cc
      dll_pll_conf.cc
+     kalman_conf.cc
      bayesian_estimation.cc
 )
 

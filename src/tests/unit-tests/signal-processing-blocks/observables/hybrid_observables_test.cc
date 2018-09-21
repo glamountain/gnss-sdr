@@ -353,6 +353,17 @@ bool HybridObservablesTest::acquire_signal()
             config->set_property("Acquisition.max_dwells", std::to_string(FLAGS_external_signal_acquisition_dwells));
             acquisition = std::make_shared<GalileoE1PcpsAmbiguousAcquisition>(config.get(), "Acquisition", 1, 0);
         }
+    else if (implementation.compare("Galileo_E1_KF_Tracking") == 0)
+        {
+            tmp_gnss_synchro.System = 'E';
+            std::string signal = "1B";
+            const char* str = signal.c_str();                                  // get a C style null terminated string
+            std::memcpy(static_cast<void*>(tmp_gnss_synchro.Signal), str, 3);  // copy string into synchro char array: 2 char + null
+            tmp_gnss_synchro.PRN = SV_ID;
+            System_and_Signal = "Galileo E1B";
+            config->set_property("Acquisition.max_dwells", std::to_string(FLAGS_external_signal_acquisition_dwells));
+            acquisition = std::make_shared<GalileoE1PcpsAmbiguousAcquisition>(config.get(), "Acquisition", 1, 0);
+        }
     else if (implementation.compare("GPS_L2_M_DLL_PLL_Tracking") == 0)
         {
             tmp_gnss_synchro.System = 'G';
@@ -569,6 +580,22 @@ void HybridObservablesTest::configure_receiver(
             config->set_property("TelemetryDecoder.implementation", "GPS_L1_CA_Telemetry_Decoder");
         }
     else if (implementation.compare("Galileo_E1_DLL_PLL_VEML_Tracking") == 0)
+        {
+            gnss_synchro_master.System = 'E';
+            std::string signal = "1B";
+            System_and_Signal = "Galileo E1B";
+            const char* str = signal.c_str();                                     // get a C style null terminated string
+            std::memcpy(static_cast<void*>(gnss_synchro_master.Signal), str, 3);  // copy string into synchro char array: 2 char + null
+
+            config->set_property("Tracking.early_late_space_chips", "0.15");
+            config->set_property("Tracking.very_early_late_space_chips", "0.6");
+            config->set_property("Tracking.early_late_space_narrow_chips", "0.15");
+            config->set_property("Tracking.very_early_late_space_narrow_chips", "0.6");
+            config->set_property("Tracking.track_pilot", "true");
+
+            config->set_property("TelemetryDecoder.implementation", "Galileo_E1B_Telemetry_Decoder");
+        }
+    else if (implementation.compare("Galileo_E1_KF_Tracking") == 0)
         {
             gnss_synchro_master.System = 'E';
             std::string signal = "1B";
